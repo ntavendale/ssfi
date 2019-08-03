@@ -6,12 +6,14 @@ CONFIG -= qt
 SOURCES += main.cpp \
     utilities.cpp \
     fileprocessor.cpp \
-    wordmap.cpp
+    wordmap.cpp \
+    threadidlist.cpp
 
 HEADERS += \
     utilities.h \
     fileprocessor.h \
-    wordmap.h
+    wordmap.h \
+    threadidlist.h
 
 LIBS += -L/usr/lib/x86_64-linux-gnu -lboost_system
 LIBS += -L/usr/lib/x86_64-linux-gnu -lboost_filesystem

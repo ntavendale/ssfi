@@ -1,9 +1,11 @@
 #include <iostream>
+#include <future>
 #include "utilities.h"
 #include "fileprocessor.h"
 #include "wordmap.h"
 
 void print_usage();
+int process_file(std::string fileName, WordMap* wordMap);
 
 int main(int argc, char *argv[])
 {
@@ -48,9 +50,16 @@ int main(int argc, char *argv[])
 
     WordMap* wordMap = new WordMap();
 
-    FileProcessor fp("/home/ntavendale/testDoc/testdoc.txt", wordMap);
-    fp.ProcessFile();
+    std::vector<std::shared_future<int>> taskVector;
 
+    std::vector<std::string>::iterator fileNameIterator;
+    for(fileNameIterator = textFiles.begin(); fileNameIterator != textFiles.end(); fileNameIterator++) {
+        if (taskVector.size() < workerThreads) {
+            std::shared_future<int> resultFromProcessFile = std::async(process_file, *fileNameIterator, wordMap);
+            taskVector.push_back( resultFromProcessFile );
+            continue;
+        }
+    }
 
     std::map<std::string, int> results = wordMap->GetMap();
     delete wordMap;
@@ -73,4 +82,11 @@ void print_usage()
     std::cout << "ssfi by Nigel Tavendale" << std::endl;
     std::cout << "usage: ssfi -t N <directory>" << std::endl;
     std::cout << "          N = number of worker threads (default 1)" << std::endl;
+}
+
+int process_file(std::string fileName, WordMap* wordMap)
+{
+    FileProcessor fp(fileName, wordMap);
+    fp.ProcessFile();
+    return 0;
 }
