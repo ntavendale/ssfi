@@ -39,9 +39,18 @@ void word_map::insert(std::map<std::string, int> inputMap)
     }
 }
 
-std::map<std::string, int> word_map::get_copy()
+std::list<std::pair<std::string, int>> word_map::get_list()
 {
     std::lock_guard<std::mutex> lck(_mtx);
-    std::map<std::string, int> result(_wordMap);
+
+    std::list<std::pair<std::string, int>> result;
+
+    std::map<std::string, int>::iterator it;
+
+    for ( it = _wordMap.begin(); it != _wordMap.end(); it++ )
+    {
+        result.push_back(std::pair<std::string, int>(it->first, it->second));
+    }
+
     return result;
 }

@@ -6,7 +6,10 @@
 #include "threadidlist.h"
 
 void print_usage();
+//file processing function. will be run in it's own thread
 void process_file(std::string fileName, word_map* wordMap, thread_id_list* threadIdList);
+//Comparison function. Used for sorting results as a list.
+bool compare_function(const std::pair<std::string, int>& first, const std::pair<std::string, int>& second);
 
 int main(int argc, char *argv[])
 {
@@ -58,28 +61,38 @@ int main(int argc, char *argv[])
         if (threadList->size() < maxThreads) {
             std::thread* newThread = new std::thread(process_file, *fileNameIterator, wordMap, threadList);
             threadList->insert(newThread->get_id(), newThread, true);
-            std::cout << "Created thread " << newThread->get_id() << std::endl;
         }
         std::cout << threadList->size() << " threads running" <<std::endl;
         while (threadList->size() >= maxThreads) {
             int purged = threadList->purge();
-            std::cout << "Purged " << purged << " threads. Current thread count = " << threadList->size() << std::endl;
         }
     }
 
-    std::map<std::string, int> results = wordMap->get_copy();
+    //keep purging until remaining threads done.
+    while (0 != threadList->size()) {
+        int purged = threadList->purge();
+    }
+
+    std::list<std::pair<std::string, int>> results = wordMap->get_list();
 
     delete wordMap;
     delete threadList;
 
-    std::map<std::string, int>::iterator it;
+    results.sort(compare_function);
 
+    std::list<std::pair<std::string, int>>::iterator it;
+
+    int writeCount = 0;
     for ( it = results.begin(); it != results.end(); it++ )
     {
+        writeCount++;
         std::cout << it->first  // string (key)
-                  << ':'
+                  << '\t'
                   << it->second   // string's value
                   << std::endl ;
+        if (10 == writeCount) {
+            break; //only write out top 10.
+        }
     }
 
     return 0;
@@ -107,4 +120,10 @@ void process_file(std::string fileName, word_map* wordMap, thread_id_list* threa
     }
     std::cout << "Signal End For Thread thread " << myId << std::endl;
     threadIdList->end(myId);
+}
+
+bool compare_function(const std::pair<std::string, int>& first, const std::pair<std::string, int>& second)
+{
+    //use greater than so they are in desceding order on printout
+    return (first.second > second.second);
 }

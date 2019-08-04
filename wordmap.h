@@ -2,6 +2,7 @@
 #define WORDMAP_H
 
 #include <map>
+#include <list>
 #include <thread>
 #include <mutex>
 
@@ -13,7 +14,7 @@ public:
     word_map();
     void insert(std::string word, int count);
     void insert(std::map<std::string, int> inputMap);
-    std::map<std::string, int> get_copy();
+    std::list<std::pair<std::string, int>> get_list();
 private:
     std::map<std::string, int> _wordMap;
     std::mutex _mtx;
