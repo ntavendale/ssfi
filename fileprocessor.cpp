@@ -1,12 +1,12 @@
 #include "fileprocessor.h"
 
-FileProcessor::FileProcessor(std::string filePath, WordMap* wordMap)
+file_processor::file_processor(std::string filePath, word_map* wordMap)
 {
     _filePath = filePath;
     _wordMap = wordMap;
 }
 
- void FileProcessor::ProcessFile()
+ void file_processor::process()
  {
      std::map<std::string, int> localWordMap;
      std::ifstream fileStream;
@@ -43,7 +43,7 @@ FileProcessor::FileProcessor(std::string filePath, WordMap* wordMap)
      }
      fileStream.close();
 
-     _wordMap->AddMap(localWordMap);
+     _wordMap->insert(localWordMap);
 
 
  }

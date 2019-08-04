@@ -1,16 +1,17 @@
 #include <iostream>
-#include <future>
+#include <thread>
 #include "utilities.h"
 #include "fileprocessor.h"
 #include "wordmap.h"
+#include "threadidlist.h"
 
 void print_usage();
-int process_file(std::string fileName, WordMap* wordMap);
+void process_file(std::string fileName, word_map* wordMap, thread_id_list* threadIdList);
 
 int main(int argc, char *argv[])
 {
     char* path;
-    int workerThreads = 1;
+    int maxThreads = 1;
 
     if (2 == argc) {
         path = argv[1];
@@ -19,7 +20,7 @@ int main(int argc, char *argv[])
         path = argv[3];
         char* pEnd;
         errno = 0;
-        workerThreads = strtol(argv[2], &pEnd, 10);
+        maxThreads = strtol(argv[2], &pEnd, 10);
         if (ERANGE == errno) {
             std::cout << "Error: invalid argument \"" << argv[2] <<"\"for number of worker threads" << std::endl;
             return 1;
@@ -37,32 +38,39 @@ int main(int argc, char *argv[])
     } else if (!Utilities::directoryAccessible(path)) {
         std::cout << "Error: directory " << path << " is not accessible" << std::endl;
         return 1;
-    } else if (0L == workerThreads) {
+    } else if (0L == maxThreads) {
         std::cout << "Error: invalid argument \"" << argv[2] << "\" for number of worker threads" << std::endl;
     }
 
     std::cout << "Directory " << path << " exits and is accessible." << std::endl;
-    std::cout << "Using "<< workerThreads << " worker thread(s)." << std::endl;
+    std::cout << "Using "<< maxThreads << " worker thread(s)." << std::endl;
 
     //Now lets pull a list of files from the directory and it's sub directories
     std::vector<std::string> textFiles = Utilities::readDirectory(path);
     std::cout << "Found " << textFiles.size() << " text file(s)." << std::endl;
 
-    WordMap* wordMap = new WordMap();
+    word_map* wordMap = new word_map();
+    thread_id_list* threadList = new thread_id_list();
 
-    std::vector<std::shared_future<int>> taskVector;
 
     std::vector<std::string>::iterator fileNameIterator;
     for(fileNameIterator = textFiles.begin(); fileNameIterator != textFiles.end(); fileNameIterator++) {
-        if (taskVector.size() < workerThreads) {
-            std::shared_future<int> resultFromProcessFile = std::async(process_file, *fileNameIterator, wordMap);
-            taskVector.push_back( resultFromProcessFile );
-            continue;
+        if (threadList->size() < maxThreads) {
+            std::thread* newThread = new std::thread(process_file, *fileNameIterator, wordMap, threadList);
+            threadList->insert(newThread->get_id(), newThread, true);
+            std::cout << "Created thread " << newThread->get_id() << std::endl;
+        }
+        std::cout << threadList->size() << " threads running" <<std::endl;
+        while (threadList->size() >= maxThreads) {
+            int purged = threadList->purge();
+            std::cout << "Purged " << purged << " threads. Current thread count = " << threadList->size() << std::endl;
         }
     }
 
-    std::map<std::string, int> results = wordMap->GetMap();
+    std::map<std::string, int> results = wordMap->get_copy();
+
     delete wordMap;
+    delete threadList;
 
     std::map<std::string, int>::iterator it;
 
@@ -84,9 +92,19 @@ void print_usage()
     std::cout << "          N = number of worker threads (default 1)" << std::endl;
 }
 
-int process_file(std::string fileName, WordMap* wordMap)
+void process_file(std::string fileName, word_map* wordMap, thread_id_list* threadIdList)
 {
-    FileProcessor fp(fileName, wordMap);
-    fp.ProcessFile();
-    return 0;
+    std::thread::id myId = std::this_thread::get_id();
+    threadIdList->insert(myId, NULL, true);
+    try
+    {
+        file_processor fp(fileName, wordMap);
+        fp.process();
+    }
+    catch (...)
+    {
+
+    }
+    std::cout << "Signal End For Thread thread " << myId << std::endl;
+    threadIdList->end(myId);
 }

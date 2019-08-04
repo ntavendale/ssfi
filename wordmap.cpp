@@ -1,12 +1,12 @@
 #include "wordmap.h"
 
-WordMap::WordMap()
+word_map::word_map()
 {
 
 }
 
 //Add a string and int
-void WordMap::AddWord(std::string word, int count)
+void word_map::insert(std::string word, int count)
 {
     //no try-finally in C++ so use a clocal lock_guard to guarantee
     //unlock on exception
@@ -21,7 +21,7 @@ void WordMap::AddWord(std::string word, int count)
 }
 
 //On second though, just add content of an entire map
-void WordMap::AddMap(std::map<std::string, int> inputMap)
+void word_map::insert(std::map<std::string, int> inputMap)
 {
     std::lock_guard<std::mutex> lck(_mtx);
 
@@ -39,7 +39,7 @@ void WordMap::AddMap(std::map<std::string, int> inputMap)
     }
 }
 
-std::map<std::string, int> WordMap::GetMap()
+std::map<std::string, int> word_map::get_copy()
 {
     std::lock_guard<std::mutex> lck(_mtx);
     std::map<std::string, int> result(_wordMap);

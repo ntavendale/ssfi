@@ -8,13 +8,13 @@
 #include <map>
 #include "wordmap.h"
 
-class FileProcessor
+class file_processor
 {
 public:
-    FileProcessor(std::string filePath, WordMap* wordMap);
-    void ProcessFile();
+    file_processor(std::string filePath, word_map* wordMap);
+    void process();
 private:
-    WordMap* _wordMap;
+    word_map* _wordMap;
     std::string _filePath;
 };
 
