@@ -12,6 +12,9 @@ bool Utilities::directoryExists(char* directroyPath)
     else if (ENOENT == errno) {
         return false;
     }
+    //got some other error other than the NOWENT Error.
+    //This means dir is there but there is some issue with it (probably permissions).
+    return true;
 }
 
 bool Utilities::directoryAccessible(char* directroyPath)
@@ -22,9 +25,8 @@ bool Utilities::directoryAccessible(char* directroyPath)
         closedir(dir);
         return true;
     }
-    else if (ENOENT != errno) {
-        return false;
-    }
+    //If it's not there, it's not accessable.
+    return false;
 }
 
 std::vector<std::string> Utilities::readDirectory(char* directroyPath)
@@ -58,4 +60,5 @@ std::vector<std::string> Utilities::readDirectory(char* directroyPath)
             std::cout << "Error While Accessing " << iter->path().string() << ": "<< ec.message();
         }
     }
+    return fileList;
 }

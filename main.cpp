@@ -65,8 +65,7 @@ int main(int argc, char *argv[])
         }
         std::cout << threadList->size() << " threads running" <<std::endl;
         while (threadList->size() >= maxThreads) {
-            int purged = threadList->purge();
-            std::cout << "Purged " << purged << " threads. Current thread count = " << threadList->size() << std::endl;
+             threadList->purge();
         }
     }
 
