@@ -16,9 +16,13 @@ Ugraded the following:
 Using Boost:
 
   boost-1.53.0-27.el7.x86_64
+  
   boost-devel-1.53.0-27.el7.x86_64
 
+Installed via this command:
+
 #sudo yum install boost boost-devel
+
 
 
 The code is obviously a bit simple. Most of my C++ experience is on Windows, not Linux. The spec did not say anything
