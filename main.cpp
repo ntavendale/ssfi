@@ -61,17 +61,20 @@ int main(int argc, char *argv[])
         if (threadList->size() < maxThreads) {
             std::thread* newThread = new std::thread(process_file, *fileNameIterator, wordMap, threadList);
             threadList->insert(newThread->get_id(), newThread, true);
+            std::cout << "Created thread " << newThread->get_id() << std::endl;
         }
         std::cout << threadList->size() << " threads running" <<std::endl;
         while (threadList->size() >= maxThreads) {
             int purged = threadList->purge();
+            std::cout << "Purged " << purged << " threads. Current thread count = " << threadList->size() << std::endl;
         }
     }
 
     //keep purging until remaining threads done.
     while (0 != threadList->size()) {
-        int purged = threadList->purge();
+        threadList->purge();
     }
+    std::cout << "All threads ended" << std::endl;
 
     std::list<std::pair<std::string, int>> results = wordMap->get_list();
 

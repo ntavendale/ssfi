@@ -33,6 +33,7 @@ void thread_id_list::end(std::thread::id threadId)
         _ids[threadId].second = false;
         std::cout << "_ids[" << threadId << "].second = " << _ids[threadId].second << std::endl;
     }
+
 }
 
 int thread_id_list::purge()
@@ -45,6 +46,9 @@ int thread_id_list::purge()
     int purged = 0;
     for ( it = _ids.begin(); it != _ids.end(); it++) {
         if (!it->second.second) {
+            it->second.first->join();
+            //it->second.first->teminate();
+            delete it->second.first;
             purgeList.push_back(it->first);
             purged++;
         }
