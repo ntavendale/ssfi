@@ -31,5 +31,5 @@ about logging so I just used std::cout.
 Working in Linx after working in Windows so long is a bit like figuring out how to drive on the right side of the road 
 when I first got to the US, after spending so long driving on the left. 
 
-Cars work the same, but everything is in a different place. Just as a took a bit of time developing the muscle memory 
+Cars work the same, but everything is in a different place. Just as it took some time developing the muscle memory 
 for driving in the US, it may take some time to develop the muscle memory for POSIX programing.
