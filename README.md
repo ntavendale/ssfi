@@ -6,8 +6,11 @@ CentOS 7 (64bit) with KDE installed. Selected Dev tools on install of OS
 Ugraded the following: 
 
 #sudo yum upgrade make (to version 3,82)
+
 #sudo yum upgrade gdb 
+
 #sudo yum upgrade g++ (to version 4.8.5)
+
 #sudo yum upgrade gcc (to version 4.8.5)
 
 Using Boost:
