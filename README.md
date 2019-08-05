@@ -33,3 +33,6 @@ when I first got to the US, after spending so long driving on the left.
 
 Cars work the same, but everything is in a different place. Just as it took some time developing the muscle memory 
 for driving in the US, it may take some time to develop the muscle memory for POSIX programing.
+
+Have also manged to get a basic makefile working, and have it building with no warnings or errors 
+(at least on my box).
